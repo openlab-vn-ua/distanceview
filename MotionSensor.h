@@ -40,11 +40,11 @@ class MotionSensor : public Process
   {
     DISTANCE_UNKNOWN = MotionSensorDriver::DISTANCE_UNKNOWN,
   };
-  
-  protected:
 
-  MotionSensorDriver   driver;
-  MotionSensorHandler *handler;
+  protected:
+  
+    MotionSensorDriver  *driver;
+    MotionSensorHandler *handler;
   
   int                  lastMesureDistance;
   int                  beforeMesureDistance;
@@ -57,6 +57,7 @@ class MotionSensor : public Process
   public:
 
   MotionSensor(int trigPin, int echoPin);
+  MotionSensor(int analog);
 
   int getDistance() { return (lastMesureDistance); }
 

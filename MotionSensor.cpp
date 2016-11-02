@@ -4,8 +4,20 @@
 
 #define TIME_BETWEEN_MESURE_DISTANCE           (150) // documentation says that safe time between measurements is 20ms, but experiment shows that real safe period is ~150ms
 
-MotionSensor::MotionSensor(int trigPin, int echoPin) : driver(trigPin, echoPin)
+MotionSensor::MotionSensor(int trigPin, int echoPin)
 {
+  static UltrasonicMotionSensorDriver bufferDriver(trigPin, echoPin);
+  driver = &bufferDriver;
+  lastMesureDistance            = DISTANCE_UNKNOWN;
+  beforeMesureDistance          = DISTANCE_UNKNOWN;
+  successfulMesureBefore        = false;
+  handler                       = NULL;
+}
+
+MotionSensor::MotionSensor(int analogPin)
+{
+  static InfraredMotionSensorDriver bufferDriver(analogPin);
+  driver = &bufferDriver;
   lastMesureDistance            = DISTANCE_UNKNOWN;
   beforeMesureDistance          = DISTANCE_UNKNOWN;
   successfulMesureBefore        = false;
@@ -14,7 +26,7 @@ MotionSensor::MotionSensor(int trigPin, int echoPin) : driver(trigPin, echoPin)
 
 void MotionSensor::setup()
 {
-  driver.setup();
+  //driver->setup();
   lastMesureTime = millis();
 }
 
@@ -38,7 +50,7 @@ void MotionSensor::loop()
   if (!successfulMesureBefore || (now - lastMesureTime) >= TIME_BETWEEN_MESURE_DISTANCE) 
   { 
     beforeMesureDistance = lastMesureDistance;
-    lastMesureDistance   = driver.mesureDistance();
+    lastMesureDistance   = driver->mesureDistance();
     Serial.println(lastMesureDistance);
     emitOnDistanceUpdated(beforeMesureDistance, lastMesureDistance);
   

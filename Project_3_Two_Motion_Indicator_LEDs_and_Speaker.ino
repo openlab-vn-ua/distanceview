@@ -19,9 +19,11 @@
 #define RIGHT_TRIG_PIN               (5)
 #define RIGHT_ECHO_PIN               (6)
 
+#define ANALOG_PIN                   (0)
+
 #define MAX_DISTANCE                 (3000)    // in mm
 
-#define MOTION_SENSOR_COUNT          (2)
+#define MOTION_SENSOR_COUNT          (1)
 #define LED_COUNT                    (2)
 
 
@@ -43,8 +45,9 @@ MotionIndicatorLed             motionIndicatorLeds[LED_COUNT];
 MotionIndicatorSpeaker         motionIndicatorSpeaker;
 
 MotionSensor                   motionSensors[MOTION_SENSOR_COUNT] = {
-                                                  MotionSensor(LEFT_TRIG_PIN,  LEFT_ECHO_PIN), 
-                                                  MotionSensor(RIGHT_TRIG_PIN, RIGHT_ECHO_PIN)
+                                                  //MotionSensor(LEFT_TRIG_PIN,  LEFT_ECHO_PIN), 
+                                                  //MotionSensor(RIGHT_TRIG_PIN, RIGHT_ECHO_PIN)
+                                                  MotionSensor(ANALOG_PIN)
                                                  };
 
 MotionSensorHandlerDispatcher  motionSensorHandlerDispatchers[MOTION_SENSOR_COUNT]; 
@@ -62,36 +65,36 @@ void setup()
   screen.attachScreen(&newScreen);
   
   processDispatcher.addSubProcess(&motionSensors[LEFT]);
-  processDispatcher.addSubProcess(&motionSensors[RIGHT]);
+ // processDispatcher.addSubProcess(&motionSensors[RIGHT]);
   processDispatcher.addSubProcess(&leds[LEFT]);
   processDispatcher.addSubProcess(&leds[RIGHT]);
   processDispatcher.addSubProcess(&speaker);
   processDispatcher.addSubProcess(&screen);
   
   processDispatcher.setup();
+  //motionSensors[LEFT].setup();
   
   motionIndicatorLeds[LEFT].attachLed(&leds[LEFT]);
-  motionIndicatorLeds[RIGHT].attachLed(&leds[RIGHT]);
+  //motionIndicatorLeds[RIGHT].attachLed(&leds[RIGHT]);
   motionIndicatorSpeaker.attachSpeaker(&speaker);
   
   motionSensors[LEFT].setHandler(&motionSensorHandlerDispatchers[LEFT]);
-  motionSensors[RIGHT].setHandler(&motionSensorHandlerDispatchers[RIGHT]);
+ // motionSensors[RIGHT].setHandler(&motionSensorHandlerDispatchers[RIGHT]);
   
   motionSensorHandlerDispatchers[LEFT].addSubHandler(&motionIndicatorLeds[LEFT]);
   motionSensorHandlerDispatchers[LEFT].addSubHandler(&motionIndicatorSpeaker);
   motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[LEFT]);
 
-  motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorLeds[RIGHT]);
-  motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorSpeaker);
-  motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[RIGHT]);
+  //motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorLeds[RIGHT]);
+  //motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorSpeaker);
+  //motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[RIGHT]);
 
   screen.addMotionSensorToListen(&motionSensors[LEFT], LEFT);
-  screen.addMotionSensorToListen(&(motionSensors[RIGHT]), RIGHT);
+  //screen.addMotionSensorToListen(&(motionSensors[RIGHT]), RIGHT);
 }
 
 void loop()
 {  
   processDispatcher.loop();
-//  motionSensors[LEFT].loop();
 }
 

@@ -1,36 +1,36 @@
 #include <Arduino.h>
 #include "MotionSensorDriver.h"
 
-#define TRIG_PRE_SIGNAL_SILENSE                (3)     // in us
-#define TRIG_SIGNAL_DURATION                   (10)    // in us
+#define ULTRASONIC_TRIG_PRE_SIGNAL_SILENSE                (3)     // in us
+#define ULTRASONIC_TRIG_SIGNAL_DURATION                   (10)    // in us
 
-#define SPEED_OF_SOUND                         (343.216)   // m/s @ 25 degC
-#define MAX_DISTANCE                           (4000)
-//#define DURATION_TO_TRAVEL_1MM               (5.8)   // (5.8) number of us to travel 1mm
+#define SPEED_OF_SOUND                                    (343.216)   // m/s @ 25 degC
+#define ULTRASONIC_MAX_DISTANCE                           (4000)
+#define INFRARED_MAX_DISTANCE                             (1500)
 
-MotionSensorDriver::MotionSensorDriver(int trigPin, int echoPin)
+UltrasonicMotionSensorDriver::UltrasonicMotionSensorDriver(int trigPin, int echoPin)
 {
   durationToTravel1mm   = 2000 / SPEED_OF_SOUND;
   
   this->trigPin         = trigPin;
   this->echoPin         = echoPin;
-  this->maxDistance     = MAX_DISTANCE;
-  this->timeOut         = MAX_DISTANCE * durationToTravel1mm; 
+  this->maxDistance     = ULTRASONIC_MAX_DISTANCE;
+  this->timeOut         = ULTRASONIC_MAX_DISTANCE * durationToTravel1mm; 
 }
 
-void MotionSensorDriver::setup()
+void UltrasonicMotionSensorDriver::setup()
 {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 }
 
-int MotionSensorDriver::mesureDistance()
+int UltrasonicMotionSensorDriver::mesureDistance()
 { 
   // returns distance in mm 
   digitalWrite(trigPin, LOW);
-  delayMicroseconds(TRIG_PRE_SIGNAL_SILENSE);
+  delayMicroseconds(ULTRASONIC_TRIG_PRE_SIGNAL_SILENSE);
   digitalWrite(trigPin, HIGH);
-  delayMicroseconds(TRIG_SIGNAL_DURATION);
+  delayMicroseconds(ULTRASONIC_TRIG_SIGNAL_DURATION);
   digitalWrite(trigPin, LOW);
 
   int duration;
@@ -55,4 +55,30 @@ int MotionSensorDriver::mesureDistance()
   }
 }
 
+InfraredMotionSensorDriver::InfraredMotionSensorDriver(int analogPin)
+{
+  this->analogPin = analogPin;
+}
+
+void InfraredMotionSensorDriver::setup()
+{
+  maxDistance = INFRARED_MAX_DISTANCE;
+}
+
+int InfraredMotionSensorDriver::mesureDistance()
+{ 
+  // returns distance in mm 
+  int duration = analogRead(analogPin);
+  
+  int distance = 94620 / (duration - 16.92);
+
+  if (duration <= 16.92)
+  {
+    return (DISTANCE_UNKNOWN);
+  }
+  else
+  {
+    return (distance);
+  }
+}
  
