@@ -4,13 +4,13 @@
 #define ULTRASONIC_TRIG_PRE_SIGNAL_SILENSE                (3)     // in us
 #define ULTRASONIC_TRIG_SIGNAL_DURATION                   (10)    // in us
 
-#define SPEED_OF_SOUND                                    (343.216)   // m/s @ 25 degC
+#define SPEED_OF_SOUND                                    (343.216)   // m/s (mm/ms) @ 25 degC 
 #define ULTRASONIC_MAX_DISTANCE                           (4000)
 #define INFRARED_MAX_DISTANCE                             (1500)
 
 UltrasonicMotionSensorDriver::UltrasonicMotionSensorDriver(int trigPin, int echoPin)
 {
-  durationToTravel1mm   = 2000 / SPEED_OF_SOUND;
+  this->durationToTravel1mm = 2 * 1000 / SPEED_OF_SOUND; // in us/mm, 2 for travel both direction 
   
   this->trigPin         = trigPin;
   this->echoPin         = echoPin;

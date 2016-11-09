@@ -1,12 +1,12 @@
 #include "MotionIndicatorScreen.h"
 #include "MotionSensor.h"
 
-#define TIME_BETWEEN_UPDATE      (500)
+#define TIME_BETWEEN_UPDATE      (1000)
 
 #define SET_POINT                (10)
 #define THREE_SIGNIFICANT_DIGITS (100)
 #define FOUR_SIGNIFICANT_DIGITS  (1000)
-#define OUTPUT__LENGTH           (6)
+#define OUTPUT__LENGTH           (5)
 
 MotionIndicatorScreen::MotionIndicatorScreen()
  {
@@ -107,29 +107,22 @@ void MotionIndicatorScreen::setup()
 
 void MotionIndicatorScreen::printSensorName(int sensorIndex)
 {
-  if (sensorIndex == 0)
-  {
-    screen->print("Left");
-  }
-  else if (sensorIndex == 1)
-  {
-    screen->print("Right");
-  }
-  else
-  {
-    screen->print("Sens.N");    
-    screen->print(sensorIndex+1);
-  }
+  screen->print("S.N");    
+  screen->print(sensorIndex+1);
 }
 
 void MotionIndicatorScreen::doAction()
 {
+  screen->setCursor(0, 0);
+  screen->print("                ");
   for (unsigned int i = 0; i < motionSensorsCount; i++)
   {
     screen->setCursor(i * OUTPUT__LENGTH, 0);
+    
     this->printSensorName(i);
   }
-  
+  screen->setCursor(0, 1);
+  screen->print("                ");
   for (unsigned int i = 0; i < motionSensorsCount; i++)
   {
     screen->setCursor(i * OUTPUT__LENGTH, 1);    

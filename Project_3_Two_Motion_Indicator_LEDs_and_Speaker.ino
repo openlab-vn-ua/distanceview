@@ -9,33 +9,38 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
  
-#define SPEAKER_PIN                  (9)
+#define SPEAKER_PIN                             (9)
 
-#define LEFT_LED_PIN                 (10)
-#define LEFT_TRIG_PIN                (11)
-#define LEFT_ECHO_PIN                (12)
+#define FIRST_LED_PIN                            (10)
+#define FIRST_TRIG_PIN                           (11)
+#define FIRST_ECHO_PIN                           (12)
 
-#define RIGHT_LED_PIN                (4)
-#define RIGHT_TRIG_PIN               (5)
-#define RIGHT_ECHO_PIN               (6)
+#define SECOND_LED_PIN                           (4)
+#define SECOND_TRIG_PIN                          (5)
+#define SECOND_ECHO_PIN                          (6)
 
-#define ANALOG_PIN                   (0)
+#define ANALOG_PIN                              (0)
 
-#define MAX_DISTANCE                 (3000)    // in mm
+#define MAX_DISTANCE                            (3000)    // in mm
 
-#define MOTION_SENSOR_COUNT          (1)
-#define LED_COUNT                    (2)
+#define MOTION_SENSOR_COUNT                     (3)
+#define ULTRASONIC_MOTION_SENSOR_COUNT          (2)
+#define INFRARED_MOTION_SENSOR_COUNT            (1)
+
+
+#define LED_COUNT                               (2)
 
 
 enum
 {
-  LEFT = 0, 
-  RIGHT = 1,
+  FIRST  = 0, 
+  SECOND = 1,
+  THIRD  = 2,
 };
 
 Led                            leds[LED_COUNT] ={
-                                        Led(LEFT_LED_PIN),
-                                        Led(RIGHT_LED_PIN),
+                                        Led(FIRST_LED_PIN),
+                                        Led(SECOND_LED_PIN),
                                        };
 
 Speaker                        speaker(SPEAKER_PIN);
@@ -44,11 +49,20 @@ MotionIndicatorLed             motionIndicatorLeds[LED_COUNT];
 
 MotionIndicatorSpeaker         motionIndicatorSpeaker;
 
+UltrasonicMotionSensorDriver   ultrasonicMotionSensors[ULTRASONIC_MOTION_SENSOR_COUNT] = {
+                                                         UltrasonicMotionSensorDriver(FIRST_TRIG_PIN,  FIRST_ECHO_PIN),        
+                                                         UltrasonicMotionSensorDriver(SECOND_TRIG_PIN, SECOND_ECHO_PIN)
+                                                         };
+
+InfraredMotionSensorDriver     infraredMotionSensors[INFRARED_MOTION_SENSOR_COUNT]     = {
+                                                         InfraredMotionSensorDriver(ANALOG_PIN)
+                                                         };
+
 MotionSensor                   motionSensors[MOTION_SENSOR_COUNT] = {
-                                                  //MotionSensor(LEFT_TRIG_PIN,  LEFT_ECHO_PIN), 
-                                                  //MotionSensor(RIGHT_TRIG_PIN, RIGHT_ECHO_PIN)
-                                                  MotionSensor(ANALOG_PIN)
-                                                 };
+                                                         MotionSensor(&ultrasonicMotionSensors[FIRST]), 
+                                                         MotionSensor(&ultrasonicMotionSensors[SECOND]),
+                                                         MotionSensor(&infraredMotionSensors[FIRST])
+                                                         };
 
 MotionSensorHandlerDispatcher  motionSensorHandlerDispatchers[MOTION_SENSOR_COUNT]; 
 
@@ -64,33 +78,39 @@ void setup()
    
   screen.attachScreen(&newScreen);
   
-  processDispatcher.addSubProcess(&motionSensors[LEFT]);
- // processDispatcher.addSubProcess(&motionSensors[RIGHT]);
-  processDispatcher.addSubProcess(&leds[LEFT]);
-  processDispatcher.addSubProcess(&leds[RIGHT]);
+  processDispatcher.addSubProcess(&motionSensors[FIRST]);
+  processDispatcher.addSubProcess(&motionSensors[SECOND]);
+  processDispatcher.addSubProcess(&motionSensors[THIRD]);
+  processDispatcher.addSubProcess(&leds[FIRST]);
+  processDispatcher.addSubProcess(&leds[SECOND]);
   processDispatcher.addSubProcess(&speaker);
   processDispatcher.addSubProcess(&screen);
   
   processDispatcher.setup();
-  //motionSensors[LEFT].setup();
   
-  motionIndicatorLeds[LEFT].attachLed(&leds[LEFT]);
-  //motionIndicatorLeds[RIGHT].attachLed(&leds[RIGHT]);
+  motionIndicatorLeds[FIRST].attachLed(&leds[FIRST]);
+  motionIndicatorLeds[SECOND].attachLed(&leds[SECOND]);
   motionIndicatorSpeaker.attachSpeaker(&speaker);
   
-  motionSensors[LEFT].setHandler(&motionSensorHandlerDispatchers[LEFT]);
- // motionSensors[RIGHT].setHandler(&motionSensorHandlerDispatchers[RIGHT]);
+  motionSensors[FIRST].setHandler(&motionSensorHandlerDispatchers[FIRST]);
+  motionSensors[SECOND].setHandler(&motionSensorHandlerDispatchers[SECOND]);
+  motionSensors[THIRD].setHandler(&motionSensorHandlerDispatchers[THIRD]);
   
-  motionSensorHandlerDispatchers[LEFT].addSubHandler(&motionIndicatorLeds[LEFT]);
-  motionSensorHandlerDispatchers[LEFT].addSubHandler(&motionIndicatorSpeaker);
-  motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[LEFT]);
+  motionSensorHandlerDispatchers[FIRST].addSubHandler(&motionIndicatorLeds[FIRST]);
+  motionSensorHandlerDispatchers[FIRST].addSubHandler(&motionIndicatorSpeaker);
+  motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[FIRST]);
 
-  //motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorLeds[RIGHT]);
-  //motionSensorHandlerDispatchers[RIGHT].addSubHandler(&motionIndicatorSpeaker);
-  //motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[RIGHT]);
+  motionSensorHandlerDispatchers[SECOND].addSubHandler(&motionIndicatorLeds[SECOND]);
+  motionSensorHandlerDispatchers[SECOND].addSubHandler(&motionIndicatorSpeaker);
+  motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[SECOND]);
 
-  screen.addMotionSensorToListen(&motionSensors[LEFT], LEFT);
-  //screen.addMotionSensorToListen(&(motionSensors[RIGHT]), RIGHT);
+  motionSensorHandlerDispatchers[THIRD].addSubHandler(&motionIndicatorLeds[THIRD]);
+  motionSensorHandlerDispatchers[THIRD].addSubHandler(&motionIndicatorSpeaker);
+  motionIndicatorSpeaker.startListenMotionSensor(&motionSensors[THIRD]);
+
+  screen.addMotionSensorToListen(&motionSensors[FIRST], FIRST);
+  screen.addMotionSensorToListen(&motionSensors[SECOND], SECOND);
+  screen.addMotionSensorToListen(&motionSensors[THIRD], THIRD);
 }
 
 void loop()

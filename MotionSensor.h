@@ -56,8 +56,7 @@ class MotionSensor : public Process
   
   public:
 
-  MotionSensor(int trigPin, int echoPin);
-  MotionSensor(int analog);
+  MotionSensor(MotionSensorDriver* driver);
 
   int getDistance() { return (lastMesureDistance); }
 

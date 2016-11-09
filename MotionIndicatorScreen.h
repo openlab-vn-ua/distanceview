@@ -12,7 +12,7 @@ class MotionIndicatorScreen : public Process
  
   enum
   {
-    MAX_COUNT_MOTION_SENSORS = 3,
+    MAX_COUNT_MOTION_SENSORS = 4,
   };
 
   LiquidCrystal_I2C *screen;

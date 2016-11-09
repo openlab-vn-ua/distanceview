@@ -64,12 +64,12 @@ void MotionIndicatorLed::loop()
 MotionIndicatorSpeaker::MotionIndicatorSpeaker(Speaker *speakerToAttach)
 {
   currentSpeaker = speakerToAttach;
-/*  
+ 
   for(unsigned int i = 0; i < MAX_COUNT_MOTION_SENSORS; i++)
   {
       distance[i] =  MotionSensor::DISTANCE_UNKNOWN;
   }  
- */
+ 
   
   motionSensorsToListenCount = 0;
 }
