@@ -13,17 +13,23 @@ class MotionIndicatorScreen : public Process
   enum
   {
     MAX_COUNT_MOTION_SENSORS = 3,
+    COUNT_GETTING = 100,
   };
 
   LiquidCrystal_I2C *screen;
   MotionSensor      *motionSensors[MAX_COUNT_MOTION_SENSORS];
   unsigned int       motionSensorsCount;
   unsigned int       lastUpdateTs;
+  unsigned int       lastGettingTs;
+
+  unsigned int       V[COUNT_GETTING]={0};
+  unsigned int       maxV = 0, counterV = 0, minV = 0, averageV = 0;  
   
   void printDistance(int distance);
   void printSensorName(int sensorIndex);
   
   void doAction();
+  void updateData();
   
   public:
 

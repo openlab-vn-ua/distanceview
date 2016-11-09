@@ -1,16 +1,18 @@
 #include <Arduino.h>
 #include "MotionSensorDriver.h"
+#include <math.h>
+
+
 
 #define ULTRASONIC_TRIG_PRE_SIGNAL_SILENSE                (3)     // in us
 #define ULTRASONIC_TRIG_SIGNAL_DURATION                   (10)    // in us
 
-#define SPEED_OF_SOUND                                    (343.216)   // m/s @ 25 degC
-#define ULTRASONIC_MAX_DISTANCE                           (4000)
-#define INFRARED_MAX_DISTANCE                             (1500)
+#define SPEED_OF_SOUND                                    (343.216)   // m/s (mm/ms) @ 25 degC 
+#define ULTRASONIC_MAX_DISTANCE                           UltrasonicMotionSensorDriver::DEF_MAX_DISTANCE // TODO: implement maxDistance from constructor
 
 UltrasonicMotionSensorDriver::UltrasonicMotionSensorDriver(int trigPin, int echoPin)
 {
-  durationToTravel1mm   = 2000 / SPEED_OF_SOUND;
+  this->durationToTravel1mm = 2 * 1000 / SPEED_OF_SOUND; // in us/mm, 2 for travel both direction 
   
   this->trigPin         = trigPin;
   this->echoPin         = echoPin;
@@ -55,6 +57,8 @@ int UltrasonicMotionSensorDriver::mesureDistance()
   }
 }
 
+#define INFRARED_MAX_DISTANCE                             (1500)
+
 InfraredMotionSensorDriver::InfraredMotionSensorDriver(int analogPin)
 {
   this->analogPin = analogPin;
@@ -69,16 +73,13 @@ int InfraredMotionSensorDriver::mesureDistance()
 { 
   // returns distance in mm 
   int duration = analogRead(analogPin);
-  
-  int distance = 94620 / (duration - 16.92);
+  //double buf = duration * 5 / 1024.0;
+  //int distance = 61.681 * pow(buf, -1.133) * 10;    // one of the variants
 
-  if (duration <= 16.92)
-  {
-    return (DISTANCE_UNKNOWN);
-  }
-  else
-  {
-    return (distance);
-  }
+  //int distance = 1735 * pow(duration, -1.07) * 100; // better
+
+  int distance = duration;
+  
+  return (distance);
 }
  

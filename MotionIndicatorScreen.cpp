@@ -1,7 +1,10 @@
 #include "MotionIndicatorScreen.h"
 #include "MotionSensor.h"
 
-#define TIME_BETWEEN_UPDATE      (500)
+#define TIME_BETWEEN_UPDATE      (1000)
+#define TIME_BETWEEN_GET_DISTANCE (10)
+#define INFINITY                 (10000)
+
 
 #define SET_POINT                (10)
 #define THREE_SIGNIFICANT_DIGITS (100)
@@ -11,8 +14,9 @@
 MotionIndicatorScreen::MotionIndicatorScreen()
  {
    motionSensorsCount = 0;
-   lastUpdateTs = 0;
-   this->screen = NULL;
+   lastUpdateTs       = 0;
+   lastGettingTs      = 0;
+   this->screen       = NULL;
  }
 
 void MotionIndicatorScreen::printDistance(int distance)
@@ -124,18 +128,43 @@ void MotionIndicatorScreen::printSensorName(int sensorIndex)
 
 void MotionIndicatorScreen::doAction()
 {
-  for (unsigned int i = 0; i < motionSensorsCount; i++)
+  screen->setCursor(0, 0);  
+  screen->print("            ");
+
+  minV = INFINITY;
+  maxV = 0;
+  averageV = 0;
+  for (unsigned int i = 0; i < COUNT_GETTING; i++)
   {
-    screen->setCursor(i * OUTPUT__LENGTH, 0);
-    this->printSensorName(i);
+    if (minV > V[i])
+    {
+      minV = V[i]; 
+    }
+    if (maxV < V[i])
+    {
+      maxV = V[i]; 
+    }
+    averageV += V[i];
   }
+  screen->setCursor(0, 0);
+  screen->print(minV);
+
+  screen->setCursor(6, 0);
+  screen->print(maxV);
+
+  screen->setCursor(0, 1);
+  screen->print("            ");
+
+  screen->setCursor(3, 1);
+  screen->print(averageV / COUNT_GETTING);
   
-  for (unsigned int i = 0; i < motionSensorsCount; i++)
-  {
-    screen->setCursor(i * OUTPUT__LENGTH, 1);    
-    int distance = motionSensors[i]->getDistance();
-    this->printDistance(distance);
-  }  
+}
+
+void MotionIndicatorScreen::updateData()
+{
+  V[counterV] = motionSensors[0]->getDistance();
+  counterV++;
+  counterV %= COUNT_GETTING;
 }
 
 void MotionIndicatorScreen::loop()
@@ -146,6 +175,12 @@ void MotionIndicatorScreen::loop()
   {
     doAction(); 
     lastUpdateTs = millis();
+  }
+  currentTime = millis();
+  if (lastGettingTs <= 0 || currentTime - lastGettingTs >= TIME_BETWEEN_GET_DISTANCE)
+  { 
+    updateData(); 
+    lastGettingTs = millis();
   }
 }
 
