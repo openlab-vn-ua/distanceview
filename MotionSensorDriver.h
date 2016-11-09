@@ -1,21 +1,6 @@
 #ifndef __MOTION_SENSOR_DRIVER_H__
 #define __MOTION_SENSOR_DRIVER_H__
 
-// DriverDistanceSensor
-// DriverDistanceSensorUltrasolic
-// DriverDistanceSensorInfrared
-// DriverDistanceSensorInfraredRaw
-
-// Proccess
-// ControllerLed
-// ControllerSpeaker
-
-// MotionIndicatorLed
-// MotionIndicatorSpeaker
-// MotionIndicatorScreen
-
-// 
-
 // Motion Sensor Driver
 // ---------------------------
 
@@ -84,7 +69,12 @@ class InfraredMotionSensorDriver : public MotionSensorDriver
     MAX_DISTANCE = 1200,
   };
 
-  InfraredMotionSensorDriver(int analogPin);
+  enum
+  {
+    DEF_MAX_DISTANCE = MAX_DISTANCE // in mm
+  };
+
+  InfraredMotionSensorDriver(int analogPin, int maxDistance = DEF_MAX_DISTANCE);
 
   virtual
   void setup();
@@ -102,7 +92,7 @@ class InfraredMotionSensorDriverRaw : public MotionSensorDriver
   
   public:
 
-  InfraredMotionSensorDriver(int analogPin);
+  InfraredMotionSensorDriverRaw(int analogPin);
 
   virtual
   void setup();
