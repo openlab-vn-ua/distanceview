@@ -1,18 +1,18 @@
-#include "Led.h"
+#include "ControllerLed.h"
 
 #include <Arduino.h>
 
-Led::Led(int pin)
+ControllerLed::ControllerLed(int pin)
 {
   this->pin = pin;
 }
 
-void Led::setup()
+void ControllerLed::setup()
 {
   pinMode(pin, OUTPUT);
 }
 
-void Led::set(bool active)
+void ControllerLed::set(bool active)
 {
   blinking = false;
   if (active)
@@ -27,7 +27,7 @@ void Led::set(bool active)
   }
 }
 
-void Led::setBlink(int period)
+void ControllerLed::setBlink(int period)
 {
   if (!blinking)
   {
@@ -38,12 +38,12 @@ void Led::setBlink(int period)
   this->period      = period;
 }
   
-bool Led::isActive()
+bool ControllerLed::isActive()
 {
   return(activity);
 }
 
-void Led::loop()
+void ControllerLed::loop()
 {
   if (blinking == true)
   {

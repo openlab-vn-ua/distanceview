@@ -1,20 +1,20 @@
-#include "Speaker.h"
+#include "ControllerSpeaker.h"
 
 #define FREQUENCY    (490)  // in Hz
 
 #include <Arduino.h>
 
-Speaker::Speaker(int pin)
+ControllerSpeaker::ControllerSpeaker(int pin)
 {
   this->pin = pin;
 }
 
-void Speaker::setup()
+void ControllerSpeaker::setup()
 {
   pinMode(pin, OUTPUT);
 }
 
-void Speaker::set(bool active)
+void ControllerSpeaker::set(bool active)
 {
   soundBlinking = false;
   if (active)
@@ -31,7 +31,7 @@ void Speaker::set(bool active)
   }
 }
 
-void Speaker::setSoundBlink(int period)
+void ControllerSpeaker::setSoundBlink(int period)
 {
   if (!soundBlinking)
   {
@@ -44,12 +44,12 @@ void Speaker::setSoundBlink(int period)
   this->period      = period;
 }
   
-bool Speaker::isActive()
+bool ControllerSpeaker::isActive()
 {
   return(activity);
 }
 
-void Speaker::loop()
+void ControllerSpeaker::loop()
 {
   if (soundBlinking == true)
   {

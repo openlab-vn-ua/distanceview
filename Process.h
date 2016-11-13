@@ -4,33 +4,34 @@
 class Process
 {
   public:
-  virtual void setup() = 0;
-  virtual void loop()  = 0;
+  
+   virtual void setup() = 0;
+   virtual void loop()  = 0;
 };
 
 class ProcessDispatcher : public Process
 {
   public:
 
-  enum
-  {
-    MAX_SUB_PROCESSES = 10,
-  };
+   enum
+   {
+     MAX_SUB_PROCESSES = 10,
+   };
 
   protected:
 
-  Process         *handlers[MAX_SUB_PROCESSES];
-  unsigned int     handlersCount;
+   Process         *handlers[MAX_SUB_PROCESSES];
+   unsigned int     handlersCount;
 
   public:
 
-  ProcessDispatcher() : handlersCount(0) {}
+   ProcessDispatcher() : handlersCount(0) {}
   
-  bool addSubProcess(Process *process);
-  bool removeSubProcess(Process *process);
+   bool             addSubProcess(Process *process);
+   bool             removeSubProcess(Process *process);
   
-  virtual void setup();
-  virtual void loop();
+   virtual void     setup();
+   virtual void     loop();
 };
 
 /*
